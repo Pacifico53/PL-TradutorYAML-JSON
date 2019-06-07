@@ -1,9 +1,6 @@
 %{
 	#include <stdio.h>
 	#include <string.h>
-	#include "abin.c"
-
-	FILE *ficheiro;
 %}
 
 %token STR
