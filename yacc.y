@@ -2,30 +2,42 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include "abin.c"
-	
+
 	FILE *ficheiro;
 %}
 
-%token COMENTARIO ELEMENTO
+%token STR
 %%
 
 programa: infos;
 
 infos: info
-        | info infos
+    | info infos
 	;
 
-info: objeto 
-    	| array
+info: objeto
+    | array
 	| nolinebreak
 	| linebreak
-	| COMENTARIO
+	| comment
+    | STR
 	;
 
 objeto: nome':' info;
 
+nome: STR;
+
 array: '-' info;
 
-nolinebreak: '>' 
+comment: '#' STR;
+
+linebreak: '|''-' info;
+
+nolinebreak: '>' info;
+
 %%
 
+int main(){
+   yyparse();
+   return 0;
+}
