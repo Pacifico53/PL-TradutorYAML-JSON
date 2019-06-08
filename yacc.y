@@ -1,6 +1,6 @@
 %{
-	#include <stdio.h>
-	#include <string.h>
+#include <stdio.h>
+#include <string.h>
 %}
 
 %token STR
@@ -16,25 +16,27 @@ info: objeto
     | array
 	| nolinebreak
 	| linebreak
-	| comment
     | STR
 	;
 
-objeto: nome':' info;
+objeto: nome ':' info;
 
 nome: STR;
 
 array: '-' info;
-
-comment: '#' STR;
 
 linebreak: '|''-' info;
 
 nolinebreak: '>' info;
 
 %%
+#include "lex.yy.c"
+int yyerror(char* s) {
+	printf("Erro:%s\n",s);
+} 
 
-int main(){
-   yyparse();
-   return 0;
+int main () {
+	yyparse();
+	return 0;
 }
+

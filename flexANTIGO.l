@@ -11,20 +11,20 @@ char* info;
 %%
 ---             { printf("Inicio YAML.\n"); BEGIN YAML;}
 <YAML>#.*       { printf("Encontrado comment.\n");}
-<YAML>[^-\n]*:  {
+<YAML>^(\ +)?-.*       {
+    printf("Encontrado elemento '%s' do array '%s'\n", yytext, info);
+}
+<YAML>.*:  {
     printf("Encontrada array/object \"%s\"\n", yytext);
     info = strdup(yytext);
 }
-<YAML>[^-\n]*:[^>\-\n]+    {
+<YAML>[^-\n]*:[^>\|\n]+    {
     printf("Encontrado key value pair '%s' do object '%s'\n", yytext, info);
-}
-<YAML>-.*       {
-    printf("Encontrado elemento '%s' do array '%s'\n", yytext, info);
 }
 <YAML>.+:.>     {
     printf("Encontrado PARAGRAPH\n");
 }
-<YAML>.+:.\|-    {
+<YAML>.+:.\|-?    {
     printf("Encontrado CONTENT\n");
 }
 .|\n            {;}
