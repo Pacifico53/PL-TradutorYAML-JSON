@@ -64,7 +64,7 @@ void fix_key_val(char* keyval, char* res){
 
 ^#.+    { ; }; //apanhar os comentários para ignorar
 
-^[\t| ]*[a-zA-Z_]+:[^ a-zA-Z] {
+^[\t| ]*[a-zA-Z_]+:$ {
     // para apanhar o nome do array / objeto
     aux = strtok(strdup(yytext),":");
     trim(aux, NULL);
@@ -83,7 +83,7 @@ void fix_key_val(char* keyval, char* res){
 }
 
 ^[\t| ]*-\ [a-zA-Z_]+:[ _a-zA-Z0-9]* {
-    // para apanhar os auxros KEYVALUE de um array
+    // para apanhar os membros KEYVALUE de um array
     char auxKV[64];
     aux = strdup(yytext);
     trim(aux, " -");
@@ -101,7 +101,25 @@ void fix_key_val(char* keyval, char* res){
     return KEYVALUE;
 }
 
-[\n\t] {;}
+^[\t| ]*[a-zA-Z_]+:\ \|-$ {
+    // para apanhar o nome de um linebreak
+    aux = strtok(strdup(yytext),":");
+    trim(aux, NULL);
+    yylval.str = strdup(aux);
+    free(aux);
+    return LINEBREAK;
+}
+
+^[\t| ]*[a-zA-Z ]+$ {
+    // para apanhar texto simples
+    aux = strdup(yytext);
+    trim(aux, NULL);
+    yylval.str = strdup(aux);
+    free(aux);
+    return STR;
+}
+
+.|\n {;}
 
 %%
 

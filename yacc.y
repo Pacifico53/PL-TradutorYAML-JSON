@@ -9,6 +9,7 @@
     extern int yylex();
     void yyerror(char*);
     char *strconcat(char *str1, char *str2);
+    char* paragraph_concat(char *str1, char *str2);
 %}
 
 %union{
@@ -16,11 +17,11 @@
     char* str;
 }
 
-%type <str> MEMBRO MEMBROKV NOME Elements Elem KEYVALUE
-%type <str> Array Childs Child
+%type <str> MEMBRO LINEBREAK MEMBROKV NOME STR KEYVALUE
+%type <str> Array Childs Child Text Elements Elem Parag String
 %type <num> ST
 
-%token MEMBRO MEMBROKV NOME ST KEYVALUE
+%token MEMBRO LINEBREAK MEMBROKV NOME ST STR KEYVALUE
 
 %%
 
@@ -31,16 +32,35 @@ Childs: Child Childs    { asprintf(&$$, "%s%s", $1, $2); }
       | Child           { $$ = $1; }
       ;
 
-Child: NOME Array   {
+Child: NOME Array {
         asprintf(&$$, "\"%s\": [\n%s\n],\n", $1, $2);
      }
-     | NOME Childs  {
+     | NOME Childs {
         asprintf(&$$, "\"%s\": {\n%s\n},\n", $1, $2);
      }
-     | KEYVALUE     {
-        asprintf(&$$, "%s\n", $$);
+     | KEYVALUE {
+        asprintf(&$$, "%s\n", $1);
+     }
+     | LINEBREAK Parag {
+        asprintf(&$$, "\"%s\": \"%s\"\n", $1, $2);
      }
      ;
+
+Parag: Text {
+        $$ = malloc(sizeof(char)*(strlen($1)+1));
+        snprintf($$, strlen($1)+1, "%s",$1);
+     }
+     ;
+
+Text: String Text   { $$ = paragraph_concat($1, $2); }
+    | String        { $$ = $1; }
+    ;
+
+String: STR         {
+        $$ = malloc(sizeof(char)*(strlen($1)+8));
+        snprintf($$, strlen($1) + 8, "%s",$1);
+      }
+      ;
 
 Array: Elements {
         $$ = malloc(sizeof(char)*(strlen($1)+1));
@@ -84,3 +104,12 @@ char* strconcat(char *str1, char *str2){
     return str3;
 }
 
+char* paragraph_concat(char *str1, char *str2){
+    int len1 = strlen(str1);
+    int len2 = strlen(str2);
+    char *str3 = malloc(sizeof(char)*(len1+len2+2));
+
+    snprintf(str3, len1+len2+9, "%s\\n%s", str1, str2);
+
+    return str3;
+}
