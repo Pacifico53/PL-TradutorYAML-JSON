@@ -1,7 +1,9 @@
 %{
+    #define _GNU_SOURCE
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+
     extern char* yytext;
     extern int yylineno;
     extern int yylex();
@@ -12,7 +14,6 @@
 %union{
     double num;
     char* str;
-    char** list;
 }
 
 %type <str> MEMBRO MEMBROKV NOME Elements Elem KEYVALUE
@@ -23,21 +24,21 @@
 
 %%
 
-Start: ST Childs
+Start: ST Childs        { printf("{\n%s\n}\n", $2); }
      ;
 
-Childs: Child Childs
-      | Child
+Childs: Child Childs    { asprintf(&$$, "%s%s", $1, $2); }
+      | Child           { $$ = $1; }
       ;
 
 Child: NOME Array   {
-        printf("\"%s\": [\n%s\n],\n", $1, $2);
+        asprintf(&$$, "\"%s\": [\n%s\n],\n", $1, $2);
      }
-     | NOME Child   {
-        printf("\"%s\": {\n%s\n},\n", $1, $2);
+     | NOME Childs  {
+        asprintf(&$$, "\"%s\": {\n%s\n},\n", $1, $2);
      }
      | KEYVALUE     {
-        printf("%s\n", $$);
+        asprintf(&$$, "%s\n", $$);
      }
      ;
 
@@ -51,11 +52,11 @@ Elements: Elem Elements { $$ = strconcat($1,$2); }
         | Elem          { $$ = $1; }
         ;
 
-Elem: MEMBRO {
+Elem: MEMBRO    {
         $$ = malloc(sizeof(char)*(strlen($1)+8));
         snprintf($$, strlen($1) + 8, "  \"%s\",",$1);
     }
-    | MEMBROKV {
+    | MEMBROKV  {
         $$ = malloc(sizeof(char)*(strlen($1)+15));
         snprintf($$, strlen($1)+15,"  {\n    %s\n  },",$1);
     }

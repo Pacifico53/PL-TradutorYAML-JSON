@@ -1,0 +1,29 @@
+T = { KEYVALUE , MEMBRO , MEMBROKV, NOME , ST}
+NT = { Start , Childs , Array , Elements , Elem }
+
+S = Start
+
+P = {
+
+p0: Start -> ST Childs
+     
+
+p1: Childs -> Child Childs
+p2:        | Child
+      
+
+p3: Child -> NOME Array   
+p4:       | NOME Child   
+p5:       | KEYVALUE     
+     
+
+p6: Array -> Elements 
+     
+
+p7: Elements -> Elem Elements 
+p8:          | Elem         
+        
+
+p9: Elem -> MEMBRO 
+p10:     | MEMBROKV
+}   
