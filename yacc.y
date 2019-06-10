@@ -17,11 +17,11 @@
     char* str;
 }
 
-%type <str> MEMBRO LINEBREAK MEMBROKV NOME STR KEYVALUE
+%type <str> MEMBRO LINEBREAK MEMBROKV NOME STR KEYVALUE NOLINEBREAK
 %type <str> Array Childs Child Text Elements Elem Parag String
 %type <num> ST
 
-%token MEMBRO LINEBREAK MEMBROKV NOME ST STR KEYVALUE
+%token MEMBRO NOLINEBREAK LINEBREAK MEMBROKV NOME ST STR KEYVALUE
 
 %%
 
@@ -42,6 +42,9 @@ Child: NOME Array {
         asprintf(&$$, "%s\n", $1);
      }
      | LINEBREAK Parag {
+        asprintf(&$$, "\"%s\": \"%s\"\n", $1, $2);
+     }
+     | NOLINEBREAK Parag {
         asprintf(&$$, "\"%s\": \"%s\"\n", $1, $2);
      }
      ;

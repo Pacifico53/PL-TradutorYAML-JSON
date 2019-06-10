@@ -1,23 +1,31 @@
 ---
-# <- yaml supports comments, json does not
-# did you know you can embed json in yaml?
-# try uncommenting the next line
-# { foo: 'bar' }
+# Ficheiro exemplo de YAML 
+# Isto tudo é comentário e é ignorado
 
-json:
-  - rigid
-  - better for data interchange
-yaml:
-  - slim and flexible
-  - better for configuration
+lista de compras:
+  - Bananas
+  - Morangos
+  - Fita Cola
+  - Papel Higienico
+  - Grao de Bico
+  - Couve Flor
+Key: Value
 content: |-
-   Or we
-   can auto
-   convert line breaks
-   to save space
-object:
-  key: value
-  array:
+   Nesta paragrafo,
+   linhas separadas significam
+   newlines que deverao ser
+   devidamente representadas
+   na traducao JSON.
+paragrafo: >
+    Aqui, as linhas separadas por
+
+    uma linha totalmente em branco
+
+    representam existencia de newlines.
+Object:
+  Key: Value
+  Lista:
     - null_value:
-    - boolean: true
-    - integer: 1
+    - Elemento
+    - trabalho: Actor
+    - cidade: Vila Real
