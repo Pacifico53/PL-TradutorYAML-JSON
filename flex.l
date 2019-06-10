@@ -46,7 +46,7 @@ void fix_key_val(char* keyval, char* res){
         snprintf(res, 64, "\"%s\": \"%s\"", strs[0], strs[1]+1);
     }
     else{
-        snprintf(res, 64, "\"%s\": ", strs[0]);
+        snprintf(res, 64, "\"%s\": null", strs[0]);
     }
 
     free(token);

@@ -39,13 +39,13 @@ Child: NOME Array {
         asprintf(&$$, "\"%s\": {\n%s\n},\n", $1, $2);
      }
      | KEYVALUE {
-        asprintf(&$$, "%s\n", $1);
+        asprintf(&$$, "%s,\n", $1);
      }
      | LINEBREAK Parag {
-        asprintf(&$$, "\"%s\": \"%s\"\n", $1, $2);
+        asprintf(&$$, "\"%s\": \"%s\",\n", $1, $2);
      }
      | NOLINEBREAK Parag {
-        asprintf(&$$, "\"%s\": \"%s\"\n", $1, $2);
+        asprintf(&$$, "\"%s\": \"%s\",\n", $1, $2);
      }
      ;
 
