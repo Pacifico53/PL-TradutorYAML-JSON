@@ -7,10 +7,10 @@
 json:
   - rigid
   - better for data interchange
+key: val
 yaml:
   - slim and flexible
   - better for configuration
-asdf: adfas
 object:
   key: value
   array:

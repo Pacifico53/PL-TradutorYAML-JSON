@@ -29,6 +29,31 @@ void trim(char *str, char *seps){
     }
 }
 
+void fix_key_val(char* keyval, char* res){
+    char* token;
+    char* strs[2];
+    strs[0] = NULL;
+    strs[1] = NULL;
+    int i = 0;
+    
+    token = strtok(keyval, ":");
+    
+    while(token && i<2){
+        strs[i++] = strdup(token);
+        token = strtok(NULL, ":");
+    }
+    if(strs[1] != NULL){
+        snprintf(res, 64, "\"%s\": \"%s\"", strs[0], strs[1]+1);
+    }
+    else{
+        snprintf(res, 64, "\"%s\": ", strs[0]);
+    }
+
+    free(token);
+    free(strs[0]);
+    free(strs[1]);
+}
+
 %}
 
 %option noyywrap
@@ -37,14 +62,14 @@ void trim(char *str, char *seps){
 
 ^---    { return ST; }; //inicio do ficheiro yaml
 
-^#.+    { printf("Comment\n"); }; //apanhar os comentários para ignorar
+^#.+    { ; }; //apanhar os comentários para ignorar
 
 ^[\t| ]*[a-zA-Z_]+:[^ a-zA-Z] {
     // para apanhar o nome do array / objeto
     aux = strtok(strdup(yytext),":");
     trim(aux, NULL);
     yylval.str = strdup(aux);
-    aux = NULL;
+    free(aux);
     return NOME;
 }
 
@@ -53,22 +78,26 @@ void trim(char *str, char *seps){
     aux = strdup(yytext);
     trim(aux, " -");
     yylval.str = strdup(aux);
-    aux = NULL;
+    free(aux);
     return MEMBRO;
 }
 
 ^[\t| ]*-\ [a-zA-Z_]+:[ _a-zA-Z0-9]* {
     // para apanhar os auxros KEYVALUE de um array
+    char auxKV[64];
     aux = strdup(yytext);
     trim(aux, " -");
-    yylval.str = strdup(aux);
-    aux = NULL;
+    fix_key_val(aux, auxKV);
+    yylval.str = strdup(auxKV);
+    free(aux);
     return MEMBROKV;
 }
 
 [a-zA-Z_]+:\ [a-zA-Z_]+ {
     //para apanhar o par key:value
-    yylval.str = strdup(yytext);
+    char auxKV[64];
+    fix_key_val(yytext, auxKV);
+    yylval.str = strdup(auxKV);
     return KEYVALUE;
 }
 

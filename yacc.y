@@ -15,26 +15,25 @@
     char** list;
 }
 
-%type <num> NUM
-%type <str> CHAVE MEMBRO MEMBROKV NOME Elements Elem KEYVALUE
-%type <str> Array Objeto Childs Child
+%type <str> MEMBRO MEMBROKV NOME Elements Elem KEYVALUE
+%type <str> Array Childs Child
 %type <num> ST
 
-%token NUM CHAVE MEMBRO MEMBROKV NOME ST KEYVALUE
+%token MEMBRO MEMBROKV NOME ST KEYVALUE
 
 %%
 
 Start: ST Childs
      ;
 
-Childs: Child Childs    {sprintf($$,"%s%s",$1,$2);}
-      | Child           {$$ = $1;}
+Childs: Child Childs
+      | Child
       ;
 
 Child: NOME Array   {
         printf("\"%s\": [\n%s\n],\n", $1, $2);
      }
-     | NOME Objeto  {
+     | NOME Child   {
         printf("\"%s\": {\n%s\n},\n", $1, $2);
      }
      | KEYVALUE     {
@@ -43,28 +42,22 @@ Child: NOME Array   {
      ;
 
 Array: Elements {
-        $$ = (char*)malloc(sizeof(char)*(strlen($1)+10));
-        sprintf($$,"%s",$1);
+        $$ = malloc(sizeof(char)*(strlen($1)+1));
+        snprintf($$, strlen($1)+1, "%s",$1);
      }
      ;
-
-Objeto: KEYVALUE Childs {
-            $$ = malloc(sizeof(char*)*(strlen($1)+strlen($2)+10));
-            sprintf($$,"%s\n%s",$1,$2);
-      }
-      ;
 
 Elements: Elem Elements { $$ = strconcat($1,$2); }
         | Elem          { $$ = $1; }
         ;
 
 Elem: MEMBRO {
-        $$ = (char*)malloc(sizeof(char)*(strlen($1)+8));
-        sprintf($$,"  \"%s\",",$1);
+        $$ = malloc(sizeof(char)*(strlen($1)+8));
+        snprintf($$, strlen($1) + 8, "  \"%s\",",$1);
     }
     | MEMBROKV {
-        $$ = (char*)malloc(sizeof(char)*(strlen($1)+8));
-        sprintf($$,"  {\n    %s\n  },",$1);
+        $$ = malloc(sizeof(char)*(strlen($1)+15));
+        snprintf($$, strlen($1)+15,"  {\n    %s\n  },",$1);
     }
     ;
 
@@ -83,11 +76,9 @@ void yyerror(char* erro){
 char* strconcat(char *str1, char *str2){
     int len1 = strlen(str1);
     int len2 = strlen(str2);
-    char *str3 = (char *)malloc(sizeof(char)*(len1+len2+1));
+    char *str3 = malloc(sizeof(char)*(len1+len2+2));
 
-    strcpy(str3,str1);
-    strcpy(&(str3[len1]),"\n");
-    strcpy(&(str3[len1])+1,str2);
+    snprintf(str3, len1+len2+2, "%s\n%s", str1, str2);
 
     return str3;
 }
